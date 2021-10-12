@@ -46,7 +46,7 @@ CREATE TABLE "users"
 CREATE TABLE "orders"
 (
     "order_id"         bigserial PRIMARY KEY,
-    "order_user_id"    bigint,
+    "order_user_id"    bigint       NOT NULL,
     "order_amount"     FLOAT        NOT NULL,
     "order_city"       VARCHAR(50)  NOT NULL,
     "order_state"      VARCHAR(50)  NOT NULL,
@@ -56,8 +56,8 @@ CREATE TABLE "orders"
     "order_addr_2"     VARCHAR(100),
     "order_phone"      VARCHAR(20)  NOT NULL,
     "order_shipping"   FLOAT        NOT NULL,
-    "order_date"       timestamptz           DEFAULT (now()),
-    "order_shipped"    boolean               DEFAULT false,
+    "order_date"       timestamptz  NOT NULL DEFAULT (now()),
+    "order_shipped"    boolean      NOT NULL DEFAULT false,
     "order_track_code" VARCHAR(80),
     "created_at"       timestamptz  NOT NULL DEFAULT (now()),
     "updated_at"       timestamptz  NOT NULL DEFAULT (now())
@@ -129,6 +129,14 @@ BEGIN
 END;
 $$ language plpgsql;
 
+CREATE OR REPLACE FUNCTION trigger_set_order_date_timestamp()
+    RETURNS TRIGGER AS $$
+BEGIN
+    NEW.order_date = NOW();
+    RETURN NEW;
+END;
+$$ language plpgsql;
+
 
 CREATE TRIGGER set_timestamp_products
     BEFORE UPDATE ON products
@@ -154,3 +162,9 @@ CREATE TRIGGER set_timestamp_product_update_date
     BEFORE UPDATE ON products
     FOR EACH ROW
     EXECUTE PROCEDURE trigger_set_product_update_timestamp();
+
+CREATE TRIGGER set_timestamp_order_date
+    BEFORE INSERT ON orders
+    FOR EACH ROW
+EXECUTE PROCEDURE trigger_set_order_date_timestamp();
+
