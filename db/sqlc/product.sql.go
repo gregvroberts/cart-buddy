@@ -30,20 +30,20 @@ INSERT INTO products (
 `
 
 type CreateProductParams struct {
-	ProductSku        string         `json:"product_sku"`
-	ProductName       string         `json:"product_name"`
-	ProductPrice      float64        `json:"product_price"`
-	ProductWeight     float64        `json:"product_weight"`
-	ProductCartDesc   string         `json:"product_cart_desc"`
-	ProductShortDesc  string         `json:"product_short_desc"`
-	ProductLongDesc   string         `json:"product_long_desc"`
-	ProductThumb      sql.NullString `json:"product_thumb"`
-	ProductImage      sql.NullString `json:"product_image"`
-	ProductCategoryID int64          `json:"product_category_id"`
-	ProductStock      float64        `json:"product_stock"`
-	ProductLive       sql.NullBool   `json:"product_live"`
-	ProductUnlimited  sql.NullBool   `json:"product_unlimited"`
-	ProductLocation   string         `json:"product_location"`
+	ProductSku        string          `json:"product_sku"`
+	ProductName       string          `json:"product_name"`
+	ProductPrice      float64         `json:"product_price"`
+	ProductWeight     float64         `json:"product_weight"`
+	ProductCartDesc   string          `json:"product_cart_desc"`
+	ProductShortDesc  string          `json:"product_short_desc"`
+	ProductLongDesc   string          `json:"product_long_desc"`
+	ProductThumb      string          `json:"product_thumb"`
+	ProductImage      string          `json:"product_image"`
+	ProductCategoryID int64           `json:"product_category_id"`
+	ProductStock      sql.NullFloat64 `json:"product_stock"`
+	ProductLive       bool            `json:"product_live"`
+	ProductUnlimited  bool            `json:"product_unlimited"`
+	ProductLocation   string          `json:"product_location"`
 }
 
 func (q *Queries) CreateProduct(ctx context.Context, arg CreateProductParams) (Product, error) {
@@ -204,21 +204,21 @@ RETURNING product_id, product_sku, product_name, product_price, product_weight, 
 `
 
 type UpdateProductParams struct {
-	ProductID         int64          `json:"product_id"`
-	ProductSku        string         `json:"product_sku"`
-	ProductName       string         `json:"product_name"`
-	ProductPrice      float64        `json:"product_price"`
-	ProductWeight     float64        `json:"product_weight"`
-	ProductCartDesc   string         `json:"product_cart_desc"`
-	ProductShortDesc  string         `json:"product_short_desc"`
-	ProductLongDesc   string         `json:"product_long_desc"`
-	ProductThumb      sql.NullString `json:"product_thumb"`
-	ProductImage      sql.NullString `json:"product_image"`
-	ProductCategoryID int64          `json:"product_category_id"`
-	ProductStock      float64        `json:"product_stock"`
-	ProductLive       sql.NullBool   `json:"product_live"`
-	ProductUnlimited  sql.NullBool   `json:"product_unlimited"`
-	ProductLocation   string         `json:"product_location"`
+	ProductID         int64           `json:"product_id"`
+	ProductSku        string          `json:"product_sku"`
+	ProductName       string          `json:"product_name"`
+	ProductPrice      float64         `json:"product_price"`
+	ProductWeight     float64         `json:"product_weight"`
+	ProductCartDesc   string          `json:"product_cart_desc"`
+	ProductShortDesc  string          `json:"product_short_desc"`
+	ProductLongDesc   string          `json:"product_long_desc"`
+	ProductThumb      string          `json:"product_thumb"`
+	ProductImage      string          `json:"product_image"`
+	ProductCategoryID int64           `json:"product_category_id"`
+	ProductStock      sql.NullFloat64 `json:"product_stock"`
+	ProductLive       bool            `json:"product_live"`
+	ProductUnlimited  bool            `json:"product_unlimited"`
+	ProductLocation   string          `json:"product_location"`
 }
 
 func (q *Queries) UpdateProduct(ctx context.Context, arg UpdateProductParams) (Product, error) {

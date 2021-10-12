@@ -43,22 +43,22 @@ type OrderDetail struct {
 }
 
 type Product struct {
-	ProductID         int64          `json:"product_id"`
-	ProductSku        string         `json:"product_sku"`
-	ProductName       string         `json:"product_name"`
-	ProductPrice      float64        `json:"product_price"`
-	ProductWeight     float64        `json:"product_weight"`
-	ProductCartDesc   string         `json:"product_cart_desc"`
-	ProductShortDesc  string         `json:"product_short_desc"`
-	ProductLongDesc   string         `json:"product_long_desc"`
-	ProductThumb      sql.NullString `json:"product_thumb"`
-	ProductImage      sql.NullString `json:"product_image"`
-	ProductCategoryID int64          `json:"product_category_id"`
-	ProductUpdateDate time.Time      `json:"product_update_date"`
-	ProductStock      float64        `json:"product_stock"`
-	ProductLive       sql.NullBool   `json:"product_live"`
-	ProductUnlimited  sql.NullBool   `json:"product_unlimited"`
-	ProductLocation   string         `json:"product_location"`
+	ProductID         int64           `json:"product_id"`
+	ProductSku        string          `json:"product_sku"`
+	ProductName       string          `json:"product_name"`
+	ProductPrice      float64         `json:"product_price"`
+	ProductWeight     float64         `json:"product_weight"`
+	ProductCartDesc   string          `json:"product_cart_desc"`
+	ProductShortDesc  string          `json:"product_short_desc"`
+	ProductLongDesc   string          `json:"product_long_desc"`
+	ProductThumb      string          `json:"product_thumb"`
+	ProductImage      string          `json:"product_image"`
+	ProductCategoryID int64           `json:"product_category_id"`
+	ProductUpdateDate time.Time       `json:"product_update_date"`
+	ProductStock      sql.NullFloat64 `json:"product_stock"`
+	ProductLive       bool            `json:"product_live"`
+	ProductUnlimited  bool            `json:"product_unlimited"`
+	ProductLocation   string          `json:"product_location"`
 	// When the row was created
 	CreatedAt time.Time `json:"created_at"`
 	// When the row was last updated
