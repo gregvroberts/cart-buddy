@@ -138,5 +138,27 @@ func TestQueries_DeleteUser(t *testing.T) {
 	require.Error(t, err)
 	require.EqualError(t, err, sql.ErrNoRows.Error())
 	require.Empty(t, user2)
+}
 
+/*TestQueries_ListUsers Tests the LKistUsers function
+@param t *testing.T The test object type
+@return NONE
+*/
+func TestQueries_ListUsers(t *testing.T) {
+	for i := 0; i < 10; i++ {
+		createRandomUser(t)
+	}
+
+	arg := ListUsersParams{
+		Limit:  5,
+		Offset: 5,
+	}
+
+	users, err := testQueries.ListUsers(context.Background(), arg)
+	require.NoError(t, err)
+	require.Len(t, users, 5)
+
+	for _, user := range users {
+		require.NotEmpty(t, user)
+	}
 }
