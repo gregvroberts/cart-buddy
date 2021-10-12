@@ -121,6 +121,14 @@ RETURN NEW;
 END;
 $$ language plpgsql;
 
+CREATE OR REPLACE FUNCTION trigger_set_product_update_timestamp()
+    RETURNS TRIGGER AS $$
+BEGIN
+    NEW.product_update_date = NOW();
+    RETURN NEW;
+END;
+$$ language plpgsql;
+
 
 CREATE TRIGGER set_timestamp_products
     BEFORE UPDATE ON products
@@ -141,3 +149,8 @@ CREATE TRIGGER set_timestamp_order_details
     BEFORE UPDATE ON order_details
     FOR EACH ROW
     EXECUTE PROCEDURE trigger_set_timestamp();
+
+CREATE TRIGGER set_timestamp_product_update_date
+    BEFORE UPDATE ON products
+    FOR EACH ROW
+    EXECUTE PROCEDURE trigger_set_product_update_timestamp();
