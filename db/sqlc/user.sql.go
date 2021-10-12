@@ -8,7 +8,7 @@ import (
 	"database/sql"
 )
 
-const createuser = `-- name: Createuser :one
+const createUser = `-- name: CreateUser :one
 INSERT INTO users (
     user_f_name,
     user_l_name,
@@ -24,7 +24,7 @@ INSERT INTO users (
          ) RETURNING user_id, user_f_name, user_l_name, user_email, user_email_verified, user_city, user_state, user_postal, user_country, user_addr_1, user_addr_2, created_at, updated_at
 `
 
-type CreateuserParams struct {
+type CreateUserParams struct {
 	UserFName   string         `json:"user_f_name"`
 	UserLName   string         `json:"user_l_name"`
 	UserEmail   string         `json:"user_email"`
@@ -36,8 +36,8 @@ type CreateuserParams struct {
 	UserAddr2   sql.NullString `json:"user_addr_2"`
 }
 
-func (q *Queries) Createuser(ctx context.Context, arg CreateuserParams) (User, error) {
-	row := q.db.QueryRowContext(ctx, createuser,
+func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, error) {
+	row := q.db.QueryRowContext(ctx, createUser,
 		arg.UserFName,
 		arg.UserLName,
 		arg.UserEmail,

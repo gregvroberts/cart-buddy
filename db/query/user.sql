@@ -1,4 +1,4 @@
--- name: Createuser :one
+-- name: CreateUser :one
 INSERT INTO users (
     user_f_name,
     user_l_name,
