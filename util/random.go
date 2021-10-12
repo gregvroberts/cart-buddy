@@ -3,6 +3,7 @@ package util
 
 import (
 	"fmt"
+	"math"
 	"math/rand"
 	"strings"
 	"time"
@@ -12,6 +13,7 @@ import (
 const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
 var siteSuffix = []string{"com", "net", "org", "edu", "gov", "io"}
+var imageFileTypes = []string{"jpeg", "jpg", "png", "vector", "ai"}
 
 /* Init is the initializer function that gets ran when the package is initialized
    @params NONE
@@ -77,4 +79,41 @@ func RandomEmail() string {
 */
 func RandomPostal() string {
 	return fmt.Sprintf("%d", RandomInt(10000, 99999))
+}
+
+/*RandomSKU generates a random SKU
+@param none
+@return string Generated SKU
+*/
+func RandomSKU() string {
+	return fmt.Sprintf("%d", RandomInt(1000000000000000, 9999999999999999))
+}
+
+/*RandomFloat2 Generates a random float rounded to 2 decimal places
+@params NONE
+@return float64 The generated float
+*/
+func RandomFloat2() float64 {
+	return math.Round(rand.Float64()*100) / 100
+}
+
+/*RandomImage Generates a random image file name
+@param NONE
+@return string Generated image file name
+*/
+func RandomImage() string {
+	return fmt.Sprintf("%s.%s", RandomString(4), imageFileTypes[rand.Intn(len(imageFileTypes))])
+}
+
+/*RandomBool Generates a random Bool
+@params NONE
+@return bool The generated bool
+*/
+func RandomBool() bool {
+	n := RandomInt(1, 20)
+	if n%2 == 0 {
+		return true
+	}
+
+	return false
 }

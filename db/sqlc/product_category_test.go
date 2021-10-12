@@ -96,6 +96,7 @@ func TestQueries_ListProductCategories(t *testing.T) {
 
 	pcats, err := testQueries.ListProductCategories(context.Background(), arg)
 	require.NoError(t, err)
+	require.Len(t, pcats, 5)
 
 	for _, pcat := range pcats {
 		require.NotEmpty(t, pcat)
