@@ -162,22 +162,24 @@ SET user_f_name = $2,
     user_postal = $7,
     user_country = $8,
     user_addr_1 = $9,
-    user_addr_2 = $10
+    user_addr_2 = $10,
+    user_email_verified = $11
 WHERE user_id = $1
 RETURNING user_id, user_f_name, user_l_name, user_email, user_email_verified, user_city, user_state, user_postal, user_country, user_addr_1, user_addr_2, created_at, updated_at
 `
 
 type UpdateUserParams struct {
-	UserID      int64          `json:"user_id"`
-	UserFName   string         `json:"user_f_name"`
-	UserLName   string         `json:"user_l_name"`
-	UserEmail   string         `json:"user_email"`
-	UserCity    string         `json:"user_city"`
-	UserState   string         `json:"user_state"`
-	UserPostal  string         `json:"user_postal"`
-	UserCountry string         `json:"user_country"`
-	UserAddr1   string         `json:"user_addr_1"`
-	UserAddr2   sql.NullString `json:"user_addr_2"`
+	UserID            int64          `json:"user_id"`
+	UserFName         string         `json:"user_f_name"`
+	UserLName         string         `json:"user_l_name"`
+	UserEmail         string         `json:"user_email"`
+	UserCity          string         `json:"user_city"`
+	UserState         string         `json:"user_state"`
+	UserPostal        string         `json:"user_postal"`
+	UserCountry       string         `json:"user_country"`
+	UserAddr1         string         `json:"user_addr_1"`
+	UserAddr2         sql.NullString `json:"user_addr_2"`
+	UserEmailVerified sql.NullBool   `json:"user_email_verified"`
 }
 
 func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error) {
@@ -192,6 +194,7 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, e
 		arg.UserCountry,
 		arg.UserAddr1,
 		arg.UserAddr2,
+		arg.UserEmailVerified,
 	)
 	var i User
 	err := row.Scan(

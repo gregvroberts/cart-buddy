@@ -33,7 +33,8 @@ SET user_f_name = $2,
     user_postal = $7,
     user_country = $8,
     user_addr_1 = $9,
-    user_addr_2 = $10
+    user_addr_2 = $10,
+    user_email_verified = $11
 WHERE user_id = $1
 RETURNING *;
 
