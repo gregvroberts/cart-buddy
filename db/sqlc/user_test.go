@@ -124,3 +124,19 @@ func TestQueries_UpdateUser(t *testing.T) {
 	require.Equal(t, user1.CreatedAt, user2.CreatedAt)
 	require.NotEqual(t, user1.UpdatedAt, user2.UpdatedAt)
 }
+
+/*TestQueries_DeleteUser Test the DeleteUser function
+@param t *testing.T The test object type
+@return NONE
+*/
+func TestQueries_DeleteUser(t *testing.T) {
+	user1 := createRandomUser(t)
+	err := testQueries.DeleteUser(context.Background(), user1.UserID)
+	require.NoError(t, err)
+
+	user2, err := testQueries.GetUser(context.Background(), user1.UserID)
+	require.Error(t, err)
+	require.EqualError(t, err, sql.ErrNoRows.Error())
+	require.Empty(t, user2)
+
+}
