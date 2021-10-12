@@ -6,6 +6,7 @@ package db
 import (
 	"context"
 	"database/sql"
+	"time"
 )
 
 const createOrder = `-- name: CreateOrder :one
@@ -29,7 +30,7 @@ INSERT INTO orders (
 `
 
 type CreateOrderParams struct {
-	OrderUserID    sql.NullInt64  `json:"order_user_id"`
+	OrderUserID    int64          `json:"order_user_id"`
 	OrderAmount    float64        `json:"order_amount"`
 	OrderCity      string         `json:"order_city"`
 	OrderState     string         `json:"order_state"`
@@ -39,8 +40,8 @@ type CreateOrderParams struct {
 	OrderAddr2     sql.NullString `json:"order_addr_2"`
 	OrderPhone     string         `json:"order_phone"`
 	OrderShipping  float64        `json:"order_shipping"`
-	OrderDate      sql.NullTime   `json:"order_date"`
-	OrderShipped   sql.NullBool   `json:"order_shipped"`
+	OrderDate      time.Time      `json:"order_date"`
+	OrderShipped   bool           `json:"order_shipped"`
 	OrderTrackCode sql.NullString `json:"order_track_code"`
 }
 
@@ -194,7 +195,7 @@ RETURNING order_id, order_user_id, order_amount, order_city, order_state, order_
 
 type UpdateOrderParams struct {
 	OrderID        int64          `json:"order_id"`
-	OrderUserID    sql.NullInt64  `json:"order_user_id"`
+	OrderUserID    int64          `json:"order_user_id"`
 	OrderAmount    float64        `json:"order_amount"`
 	OrderCity      string         `json:"order_city"`
 	OrderState     string         `json:"order_state"`
@@ -204,8 +205,8 @@ type UpdateOrderParams struct {
 	OrderAddr2     sql.NullString `json:"order_addr_2"`
 	OrderPhone     string         `json:"order_phone"`
 	OrderShipping  float64        `json:"order_shipping"`
-	OrderDate      sql.NullTime   `json:"order_date"`
-	OrderShipped   sql.NullBool   `json:"order_shipped"`
+	OrderDate      time.Time      `json:"order_date"`
+	OrderShipped   bool           `json:"order_shipped"`
 	OrderTrackCode sql.NullString `json:"order_track_code"`
 }
 

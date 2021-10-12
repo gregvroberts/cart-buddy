@@ -10,7 +10,7 @@ import (
 
 /*createRandomProductCategory Creates a random product category in the database
 @param t *testing.T The test object type
-@return none
+@return ProductCategory The generated ProductCategory
 */
 func createRandomProductCategory(t *testing.T) ProductCategory {
 	categoryName := util.RandomString(15)

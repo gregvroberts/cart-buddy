@@ -117,3 +117,11 @@ func RandomBool() bool {
 
 	return false
 }
+
+/*RandomPhone generates a random phone number
+@params NONE
+@return Generated phone number
+*/
+func RandomPhone() string {
+	return fmt.Sprintf("+%d(%d) %d-%d", RandomInt(1, 99), RandomInt(100, 999), RandomInt(100, 999), RandomInt(1000, 9999))
+}

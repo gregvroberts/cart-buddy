@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	"github.com/gregvroberts/cart-buddy/util"
 	"github.com/stretchr/testify/require"
-	"math/rand"
 	"testing"
 	"time"
 )
@@ -28,16 +27,10 @@ func createRandomProduct(t *testing.T) Product {
 		ProductThumb:      util.RandomImage(),
 		ProductImage:      util.RandomImage(),
 		ProductCategoryID: pcat.CategoryID,
-		ProductLive:       util.RandomBool(),
+		ProductLive:       false,
 		ProductLocation:   util.RandomString(10),
-	}
-
-	if i := rand.Intn(10); i%2 == 0 {
-		arg.ProductStock = sql.NullFloat64{Valid: false}
-		arg.ProductUnlimited = true
-	} else {
-		arg.ProductStock = sql.NullFloat64{Float64: util.RandomFloat2(), Valid: true}
-		arg.ProductUnlimited = false
+		ProductStock:      sql.NullFloat64{Float64: util.RandomFloat2(), Valid: true},
+		ProductUnlimited:  false,
 	}
 
 	product, err := testQueries.CreateProduct(context.Background(), arg)
@@ -106,6 +99,56 @@ func TestQueries_GetProduct(t *testing.T) {
 	require.Equal(t, p1.CreatedAt, p2.UpdatedAt)
 	require.Equal(t, p1.UpdatedAt, p2.ProductUpdateDate)
 	require.Equal(t, p1.ProductUpdateDate, p2.ProductUpdateDate)
+}
+
+/*TestQueries_UpdateProduct Tests the UpdateProduct function
+@param t *testing.T The test object type
+@return NONE
+*/
+func TestQueries_UpdateProduct(t *testing.T) {
+	p1 := createRandomProduct(t)
+	pcat1 := createRandomProductCategory(t)
+
+	arg := UpdateProductParams{
+		ProductID:         p1.ProductID,
+		ProductSku:        util.RandomSKU(),
+		ProductName:       util.RandomString(90),
+		ProductPrice:      util.RandomFloat2(),
+		ProductWeight:     util.RandomFloat2(),
+		ProductCartDesc:   util.RandomString(200),
+		ProductShortDesc:  util.RandomString(900),
+		ProductLongDesc:   util.RandomString(10000),
+		ProductThumb:      util.RandomImage(),
+		ProductImage:      util.RandomImage(),
+		ProductCategoryID: pcat1.CategoryID,
+		ProductLive:       true,
+		ProductLocation:   util.RandomString(10),
+		ProductStock:      sql.NullFloat64{Valid: false},
+		ProductUnlimited:  true,
+	}
+
+	p2, err := testQueries.UpdateProduct(context.Background(), arg)
+	require.NoError(t, err)
+	require.NotEmpty(t, p2)
+
+	require.Equal(t, p1.ProductID, p2.ProductID)
+	require.NotEqual(t, p1.ProductSku, p2.ProductSku)
+	require.NotEqual(t, p1.ProductName, p2.ProductName)
+	require.NotEqual(t, p1.ProductPrice, p2.ProductPrice)
+	require.NotEqual(t, p1.ProductWeight, p2.ProductWeight)
+	require.NotEqual(t, p1.ProductCartDesc, p2.ProductCartDesc)
+	require.NotEqual(t, p1.ProductShortDesc, p2.ProductShortDesc)
+	require.NotEqual(t, p1.ProductLongDesc, p2.ProductLongDesc)
+	require.NotEqual(t, p1.ProductThumb, p2.ProductThumb)
+	require.NotEqual(t, p1.ProductImage, p2.ProductImage)
+	require.NotEqual(t, p1.ProductCategoryID, p2.ProductCategoryID)
+	require.NotEqual(t, p1.ProductLive, p2.ProductLive)
+	require.NotEqual(t, p1.ProductLocation, p2.ProductLocation)
+	require.NotEqual(t, p1.ProductStock, p2.ProductStock)
+	require.NotEqual(t, p1.ProductUnlimited, p2.ProductUnlimited)
+	require.Equal(t, p1.CreatedAt, p2.CreatedAt)
+	require.NotEqual(t, p1.UpdatedAt, p2.UpdatedAt)
+	require.NotEqual(t, p1.ProductUpdateDate, p2.ProductUpdateDate)
 }
 
 /*TestQueries_DeleteProduct Tests the DeleteProduct function

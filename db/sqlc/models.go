@@ -9,7 +9,7 @@ import (
 
 type Order struct {
 	OrderID        int64          `json:"order_id"`
-	OrderUserID    sql.NullInt64  `json:"order_user_id"`
+	OrderUserID    int64          `json:"order_user_id"`
 	OrderAmount    float64        `json:"order_amount"`
 	OrderCity      string         `json:"order_city"`
 	OrderState     string         `json:"order_state"`
@@ -19,8 +19,8 @@ type Order struct {
 	OrderAddr2     sql.NullString `json:"order_addr_2"`
 	OrderPhone     string         `json:"order_phone"`
 	OrderShipping  float64        `json:"order_shipping"`
-	OrderDate      sql.NullTime   `json:"order_date"`
-	OrderShipped   sql.NullBool   `json:"order_shipped"`
+	OrderDate      time.Time      `json:"order_date"`
+	OrderShipped   bool           `json:"order_shipped"`
 	OrderTrackCode sql.NullString `json:"order_track_code"`
 	// When the row was created
 	CreatedAt time.Time `json:"created_at"`
