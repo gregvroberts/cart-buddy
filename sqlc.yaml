@@ -1,0 +1,11 @@
+version: "1"
+packages:
+  - name: "db"
+    path: "./db/sqlc"
+    queries: "./db/query/"
+    schema: "./db/migration/"
+    engine: "postgresql"
+    emit_json_tags: true # Add json tags to generated structs
+    emit_prepared_queries: false # Dont generate codes that work with prepared statements
+    emit_interface: false # Done generate Querier interface for the generated package - dont, bc we are in dev/testing
+    emit_exact_table_names: false # By default SQLC tries to singularize table names. So we disabled this
