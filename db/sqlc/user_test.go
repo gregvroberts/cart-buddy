@@ -3,20 +3,21 @@ package db
 import (
 	"context"
 	"database/sql"
+	"github.com/gregvroberts/cart-buddy/util"
 	"github.com/stretchr/testify/require"
 	"testing"
 )
 
 func TestCreateUser(t *testing.T) {
 	arg := CreateUserParams{
-		UserFName:   "CreateUserFirst",
-		UserLName:   "CreateUserLast",
-		UserEmail:   "createUserEmail@test.com",
-		UserCity:    "CreateUserCity",
-		UserState:   "CreateUserState",
-		UserPostal:  "CreateUserPostal",
-		UserCountry: "CreateUserCountry",
-		UserAddr1:   "CreateUserAddress1",
+		UserFName:   util.RandomName(),
+		UserLName:   util.RandomName(),
+		UserEmail:   util.RandomEmail(),
+		UserCity:    util.RandomString(15),
+		UserState:   util.RandomString(15),
+		UserPostal:  util.RandomPostal(),
+		UserCountry: util.RandomString(20),
+		UserAddr1:   util.RandomAddress(),
 	}
 
 	argEmailVerified := sql.NullBool{Bool: false, Valid: true}
