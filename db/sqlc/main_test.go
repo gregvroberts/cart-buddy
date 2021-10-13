@@ -14,11 +14,13 @@ const dbSource = "postgresql://root:secret@localhost:5432/cart-buddy?sslmode=dis
 
 // testQueries Establish connection to the Queries object
 var testQueries *Queries
+var testDB *sql.DB
 
 func TestMain(m *testing.M) {
+	var err error
 
 	// Establish a simple database connection
-	conn, err := sql.Open(dbDriver, dbSource)
+	testDB, err = sql.Open(dbDriver, dbSource)
 
 	// Check for errors in opening DB connection
 	if err != nil {
@@ -26,7 +28,7 @@ func TestMain(m *testing.M) {
 	}
 
 	// Define the object and assign the DB connection
-	testQueries = New(conn)
+	testQueries = New(testDB)
 
 	os.Exit(m.Run())
 }

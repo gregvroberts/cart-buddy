@@ -50,9 +50,9 @@ func (store *Store) execTx(ctx context.Context, fn func(*Queries) error) error {
 
 //AddToCartTxParams contains the input parameters of the transfer transaction
 type AddToCartTxParams struct {
-	ProductID int64   `json:"product_id"`
-	OrderID   int64   `json:"order_id"`
-	Quantity  float64 `json:"quantity"`
+	ProductID int64 `json:"product_id"`
+	OrderID   int64 `json:"order_id"`
+	Quantity  int64 `json:"quantity"`
 }
 
 // AddToCartTxResult is the result of the AddToCartTx transaction
@@ -60,6 +60,7 @@ type AddToCartTxResult struct {
 	Product     Product     `json:"product"`
 	OrderDetail OrderDetail `json:"order_detail"`
 	Order       Order       `json:"order"`
+	Quantity    int64       `json:"quantity"`
 }
 
 func (store *Store) AddToOrderTx(ctx context.Context, arg AddToCartTxParams) (AddToCartTxResult, error) {
@@ -67,6 +68,7 @@ func (store *Store) AddToOrderTx(ctx context.Context, arg AddToCartTxParams) (Ad
 
 	err := store.execTx(ctx, func(q *Queries) error {
 		var err error
+		result.Quantity = arg.Quantity
 
 		result.Product, err = q.GetProduct(ctx, arg.ProductID)
 		if err != nil {
@@ -83,7 +85,8 @@ func (store *Store) AddToOrderTx(ctx context.Context, arg AddToCartTxParams) (Ad
 			DetailProductID:   result.Product.ProductID,
 			DetailProductName: result.Product.ProductName,
 			DetailSku:         result.Product.ProductSku,
-			DetailUnitPrice:   arg.Quantity,
+			DetailUnitPrice:   result.Product.ProductPrice,
+			DetailQuantity:    arg.Quantity,
 		})
 		if err != nil {
 			return err
