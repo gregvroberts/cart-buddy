@@ -20,13 +20,13 @@ func createRandomOrder(t *testing.T) Order {
 	arg := CreateOrderParams{
 		OrderUserID:    usr.UserID,
 		OrderAmount:    util.RandomFloat2(),
-		OrderCity:      util.RandomString(30),
-		OrderState:     util.RandomString(30),
-		OrderPostal:    util.RandomPostal(),
-		OrderCountry:   util.RandomString(30),
-		OrderAddr1:     util.RandomAddress(),
-		OrderPhone:     util.RandomPhone(),
-		OrderShipping:  util.RandomFloat2(),
+		OrderCity:      util.RandomNullString(30),
+		OrderState:     util.RandomNullString(30),
+		OrderPostal:    util.RandomNullPostal(),
+		OrderCountry:   util.RandomNullString(30),
+		OrderAddr1:     util.RandomNullAddress(),
+		OrderPhone:     util.RandomNullPhone(),
+		OrderShipping:  util.RandomNullFloat2(),
 		OrderShipped:   false,
 		OrderTrackCode: sql.NullString{String: util.RandomString(60), Valid: true},
 	}
@@ -39,6 +39,7 @@ func createRandomOrder(t *testing.T) Order {
 	require.NotZero(t, ord1.CreatedAt)
 	require.NotZero(t, ord1.UpdatedAt)
 	require.NotZero(t, ord1.OrderDate)
+	require.NotZero(t, ord1.OrderExpire)
 
 	require.Equal(t, arg.OrderUserID, ord1.OrderUserID)
 	require.Equal(t, arg.OrderAmount, ord1.OrderAmount)
@@ -56,6 +57,7 @@ func createRandomOrder(t *testing.T) Order {
 	require.WithinDuration(t, ord1.CreatedAt, ord1.UpdatedAt, time.Second)
 	require.WithinDuration(t, ord1.UpdatedAt, ord1.OrderDate, time.Second)
 	require.WithinDuration(t, ord1.OrderDate, ord1.CreatedAt, time.Second)
+	require.WithinDuration(t, ord1.UpdatedAt.AddDate(0, 0, 7), ord1.OrderExpire, time.Second)
 
 	return ord1
 }
@@ -82,6 +84,7 @@ func TestQueries_GetOrder(t *testing.T) {
 	require.Equal(t, ord1.OrderID, ord2.OrderID)
 	require.Equal(t, ord1.OrderUserID, ord2.OrderUserID)
 	require.Equal(t, ord1.OrderAmount, ord2.OrderAmount)
+	require.Equal(t, ord1.OrderPaid, ord2.OrderPaid)
 	require.Equal(t, ord1.OrderCity, ord2.OrderCity)
 	require.Equal(t, ord1.OrderState, ord2.OrderState)
 	require.Equal(t, ord1.OrderPostal, ord2.OrderPostal)
@@ -100,6 +103,7 @@ func TestQueries_GetOrder(t *testing.T) {
 	require.WithinDuration(t, ord1.CreatedAt, ord2.CreatedAt, time.Second)
 	require.WithinDuration(t, ord1.UpdatedAt, ord2.UpdatedAt, time.Second)
 	require.WithinDuration(t, ord1.OrderDate, ord2.OrderDate, time.Second)
+	require.WithinDuration(t, ord1.UpdatedAt.AddDate(0, 0, 7), ord1.OrderExpire, time.Second)
 
 }
 
@@ -115,14 +119,15 @@ func TestQueries_UpdateOrder(t *testing.T) {
 		OrderID:        ord1.OrderID,
 		OrderUserID:    user1.UserID,
 		OrderAmount:    util.RandomFloat2(),
-		OrderCity:      util.RandomString(30),
-		OrderState:     util.RandomString(30),
-		OrderPostal:    util.RandomPostal(),
-		OrderCountry:   util.RandomString(30),
-		OrderAddr1:     util.RandomAddress(),
+		OrderPaid:      true,
+		OrderCity:      util.RandomNullString(30),
+		OrderState:     util.RandomNullString(30),
+		OrderPostal:    util.RandomNullPostal(),
+		OrderCountry:   util.RandomNullString(30),
+		OrderAddr1:     util.RandomNullAddress(),
 		OrderAddr2:     sql.NullString{String: util.RandomString(10), Valid: true},
-		OrderPhone:     util.RandomPhone(),
-		OrderShipping:  util.RandomFloat2(),
+		OrderPhone:     util.RandomNullPhone(),
+		OrderShipping:  util.RandomNullFloat2(),
 		OrderShipped:   true,
 		OrderTrackCode: sql.NullString{String: util.RandomString(60), Valid: true},
 	}
@@ -134,6 +139,7 @@ func TestQueries_UpdateOrder(t *testing.T) {
 	require.Equal(t, ord1.OrderID, ord2.OrderID)
 	require.NotEqual(t, ord1.OrderUserID, ord2.OrderUserID)
 	require.NotEqual(t, ord1.OrderAmount, ord2.OrderAmount)
+	require.NotEqual(t, ord1.OrderPaid, ord2.OrderPaid)
 	require.NotEqual(t, ord1.OrderCity, ord2.OrderCity)
 	require.NotEqual(t, ord1.OrderState, ord2.OrderState)
 	require.NotEqual(t, ord1.OrderPostal, ord2.OrderPostal)
@@ -152,6 +158,8 @@ func TestQueries_UpdateOrder(t *testing.T) {
 
 	require.NotEqual(t, ord1.UpdatedAt, ord2.UpdatedAt)
 	require.NotEqual(t, ord1.OrderDate, ord2.OrderDate)
+	require.NotEqual(t, ord1.OrderExpire, ord2.OrderExpire)
+
 }
 
 /*TestQueries_DeleteOrder tests the DeleteOrder function

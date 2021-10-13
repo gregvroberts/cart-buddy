@@ -26,23 +26,23 @@ INSERT INTO orders (
                     order_track_code
 ) VALUES (
              $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13
-         ) RETURNING order_id, order_user_id, order_amount, order_city, order_state, order_postal, order_country, order_addr_1, order_addr_2, order_phone, order_shipping, order_date, order_shipped, order_track_code, created_at, updated_at
+         ) RETURNING order_id, order_user_id, order_amount, order_paid, order_city, order_state, order_postal, order_country, order_addr_1, order_addr_2, order_phone, order_shipping, order_date, order_shipped, order_track_code, order_expire, created_at, updated_at
 `
 
 type CreateOrderParams struct {
-	OrderUserID    int64          `json:"order_user_id"`
-	OrderAmount    float64        `json:"order_amount"`
-	OrderCity      string         `json:"order_city"`
-	OrderState     string         `json:"order_state"`
-	OrderPostal    string         `json:"order_postal"`
-	OrderCountry   string         `json:"order_country"`
-	OrderAddr1     string         `json:"order_addr_1"`
-	OrderAddr2     sql.NullString `json:"order_addr_2"`
-	OrderPhone     string         `json:"order_phone"`
-	OrderShipping  float64        `json:"order_shipping"`
-	OrderDate      time.Time      `json:"order_date"`
-	OrderShipped   bool           `json:"order_shipped"`
-	OrderTrackCode sql.NullString `json:"order_track_code"`
+	OrderUserID    int64           `json:"order_user_id"`
+	OrderAmount    float64         `json:"order_amount"`
+	OrderCity      sql.NullString  `json:"order_city"`
+	OrderState     sql.NullString  `json:"order_state"`
+	OrderPostal    sql.NullString  `json:"order_postal"`
+	OrderCountry   sql.NullString  `json:"order_country"`
+	OrderAddr1     sql.NullString  `json:"order_addr_1"`
+	OrderAddr2     sql.NullString  `json:"order_addr_2"`
+	OrderPhone     sql.NullString  `json:"order_phone"`
+	OrderShipping  sql.NullFloat64 `json:"order_shipping"`
+	OrderDate      time.Time       `json:"order_date"`
+	OrderShipped   bool            `json:"order_shipped"`
+	OrderTrackCode sql.NullString  `json:"order_track_code"`
 }
 
 func (q *Queries) CreateOrder(ctx context.Context, arg CreateOrderParams) (Order, error) {
@@ -66,6 +66,7 @@ func (q *Queries) CreateOrder(ctx context.Context, arg CreateOrderParams) (Order
 		&i.OrderID,
 		&i.OrderUserID,
 		&i.OrderAmount,
+		&i.OrderPaid,
 		&i.OrderCity,
 		&i.OrderState,
 		&i.OrderPostal,
@@ -77,6 +78,7 @@ func (q *Queries) CreateOrder(ctx context.Context, arg CreateOrderParams) (Order
 		&i.OrderDate,
 		&i.OrderShipped,
 		&i.OrderTrackCode,
+		&i.OrderExpire,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
@@ -94,7 +96,7 @@ func (q *Queries) DeleteOrder(ctx context.Context, orderID int64) error {
 }
 
 const getOrder = `-- name: GetOrder :one
-SELECT order_id, order_user_id, order_amount, order_city, order_state, order_postal, order_country, order_addr_1, order_addr_2, order_phone, order_shipping, order_date, order_shipped, order_track_code, created_at, updated_at FROM orders
+SELECT order_id, order_user_id, order_amount, order_paid, order_city, order_state, order_postal, order_country, order_addr_1, order_addr_2, order_phone, order_shipping, order_date, order_shipped, order_track_code, order_expire, created_at, updated_at FROM orders
 WHERE order_id = $1 LIMIT 1
 `
 
@@ -105,6 +107,7 @@ func (q *Queries) GetOrder(ctx context.Context, orderID int64) (Order, error) {
 		&i.OrderID,
 		&i.OrderUserID,
 		&i.OrderAmount,
+		&i.OrderPaid,
 		&i.OrderCity,
 		&i.OrderState,
 		&i.OrderPostal,
@@ -116,6 +119,7 @@ func (q *Queries) GetOrder(ctx context.Context, orderID int64) (Order, error) {
 		&i.OrderDate,
 		&i.OrderShipped,
 		&i.OrderTrackCode,
+		&i.OrderExpire,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
@@ -123,7 +127,7 @@ func (q *Queries) GetOrder(ctx context.Context, orderID int64) (Order, error) {
 }
 
 const listOrders = `-- name: ListOrders :many
-SELECT order_id, order_user_id, order_amount, order_city, order_state, order_postal, order_country, order_addr_1, order_addr_2, order_phone, order_shipping, order_date, order_shipped, order_track_code, created_at, updated_at FROM orders
+SELECT order_id, order_user_id, order_amount, order_paid, order_city, order_state, order_postal, order_country, order_addr_1, order_addr_2, order_phone, order_shipping, order_date, order_shipped, order_track_code, order_expire, created_at, updated_at FROM orders
 ORDER BY order_id
 LIMIT $1
     OFFSET $2
@@ -147,6 +151,7 @@ func (q *Queries) ListOrders(ctx context.Context, arg ListOrdersParams) ([]Order
 			&i.OrderID,
 			&i.OrderUserID,
 			&i.OrderAmount,
+			&i.OrderPaid,
 			&i.OrderCity,
 			&i.OrderState,
 			&i.OrderPostal,
@@ -158,6 +163,7 @@ func (q *Queries) ListOrders(ctx context.Context, arg ListOrdersParams) ([]Order
 			&i.OrderDate,
 			&i.OrderShipped,
 			&i.OrderTrackCode,
+			&i.OrderExpire,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 		); err != nil {
@@ -178,36 +184,38 @@ const updateOrder = `-- name: UpdateOrder :one
 UPDATE orders
 SET                     order_user_id = $2,
                         order_amount = $3,
-                        order_city = $4,
-                        order_state = $5,
-                        order_postal = $6,
-                        order_country = $7,
-                        order_addr_1 = $8,
-                        order_addr_2 = $9,
-                        order_phone = $10,
-                        order_shipping = $11,
-                        order_date = $12,
-                        order_shipped = $13,
-                        order_track_code = $14
+                        order_paid = $4,
+                        order_city = $5,
+                        order_state = $6,
+                        order_postal = $7,
+                        order_country = $8,
+                        order_addr_1 = $9,
+                        order_addr_2 = $10,
+                        order_phone = $11,
+                        order_shipping = $12,
+                        order_date = $13,
+                        order_shipped = $14,
+                        order_track_code = $15
 WHERE order_id = $1
-RETURNING order_id, order_user_id, order_amount, order_city, order_state, order_postal, order_country, order_addr_1, order_addr_2, order_phone, order_shipping, order_date, order_shipped, order_track_code, created_at, updated_at
+RETURNING order_id, order_user_id, order_amount, order_paid, order_city, order_state, order_postal, order_country, order_addr_1, order_addr_2, order_phone, order_shipping, order_date, order_shipped, order_track_code, order_expire, created_at, updated_at
 `
 
 type UpdateOrderParams struct {
-	OrderID        int64          `json:"order_id"`
-	OrderUserID    int64          `json:"order_user_id"`
-	OrderAmount    float64        `json:"order_amount"`
-	OrderCity      string         `json:"order_city"`
-	OrderState     string         `json:"order_state"`
-	OrderPostal    string         `json:"order_postal"`
-	OrderCountry   string         `json:"order_country"`
-	OrderAddr1     string         `json:"order_addr_1"`
-	OrderAddr2     sql.NullString `json:"order_addr_2"`
-	OrderPhone     string         `json:"order_phone"`
-	OrderShipping  float64        `json:"order_shipping"`
-	OrderDate      time.Time      `json:"order_date"`
-	OrderShipped   bool           `json:"order_shipped"`
-	OrderTrackCode sql.NullString `json:"order_track_code"`
+	OrderID        int64           `json:"order_id"`
+	OrderUserID    int64           `json:"order_user_id"`
+	OrderAmount    float64         `json:"order_amount"`
+	OrderPaid      bool            `json:"order_paid"`
+	OrderCity      sql.NullString  `json:"order_city"`
+	OrderState     sql.NullString  `json:"order_state"`
+	OrderPostal    sql.NullString  `json:"order_postal"`
+	OrderCountry   sql.NullString  `json:"order_country"`
+	OrderAddr1     sql.NullString  `json:"order_addr_1"`
+	OrderAddr2     sql.NullString  `json:"order_addr_2"`
+	OrderPhone     sql.NullString  `json:"order_phone"`
+	OrderShipping  sql.NullFloat64 `json:"order_shipping"`
+	OrderDate      time.Time       `json:"order_date"`
+	OrderShipped   bool            `json:"order_shipped"`
+	OrderTrackCode sql.NullString  `json:"order_track_code"`
 }
 
 func (q *Queries) UpdateOrder(ctx context.Context, arg UpdateOrderParams) (Order, error) {
@@ -215,6 +223,7 @@ func (q *Queries) UpdateOrder(ctx context.Context, arg UpdateOrderParams) (Order
 		arg.OrderID,
 		arg.OrderUserID,
 		arg.OrderAmount,
+		arg.OrderPaid,
 		arg.OrderCity,
 		arg.OrderState,
 		arg.OrderPostal,
@@ -232,6 +241,7 @@ func (q *Queries) UpdateOrder(ctx context.Context, arg UpdateOrderParams) (Order
 		&i.OrderID,
 		&i.OrderUserID,
 		&i.OrderAmount,
+		&i.OrderPaid,
 		&i.OrderCity,
 		&i.OrderState,
 		&i.OrderPostal,
@@ -243,6 +253,7 @@ func (q *Queries) UpdateOrder(ctx context.Context, arg UpdateOrderParams) (Order
 		&i.OrderDate,
 		&i.OrderShipped,
 		&i.OrderTrackCode,
+		&i.OrderExpire,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)

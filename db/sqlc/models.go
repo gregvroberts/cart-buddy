@@ -8,20 +8,22 @@ import (
 )
 
 type Order struct {
-	OrderID        int64          `json:"order_id"`
-	OrderUserID    int64          `json:"order_user_id"`
-	OrderAmount    float64        `json:"order_amount"`
-	OrderCity      string         `json:"order_city"`
-	OrderState     string         `json:"order_state"`
-	OrderPostal    string         `json:"order_postal"`
-	OrderCountry   string         `json:"order_country"`
-	OrderAddr1     string         `json:"order_addr_1"`
-	OrderAddr2     sql.NullString `json:"order_addr_2"`
-	OrderPhone     string         `json:"order_phone"`
-	OrderShipping  float64        `json:"order_shipping"`
-	OrderDate      time.Time      `json:"order_date"`
-	OrderShipped   bool           `json:"order_shipped"`
-	OrderTrackCode sql.NullString `json:"order_track_code"`
+	OrderID        int64           `json:"order_id"`
+	OrderUserID    int64           `json:"order_user_id"`
+	OrderAmount    float64         `json:"order_amount"`
+	OrderPaid      bool            `json:"order_paid"`
+	OrderCity      sql.NullString  `json:"order_city"`
+	OrderState     sql.NullString  `json:"order_state"`
+	OrderPostal    sql.NullString  `json:"order_postal"`
+	OrderCountry   sql.NullString  `json:"order_country"`
+	OrderAddr1     sql.NullString  `json:"order_addr_1"`
+	OrderAddr2     sql.NullString  `json:"order_addr_2"`
+	OrderPhone     sql.NullString  `json:"order_phone"`
+	OrderShipping  sql.NullFloat64 `json:"order_shipping"`
+	OrderDate      time.Time       `json:"order_date"`
+	OrderShipped   bool            `json:"order_shipped"`
+	OrderTrackCode sql.NullString  `json:"order_track_code"`
+	OrderExpire    time.Time       `json:"order_expire"`
 	// When the row was created
 	CreatedAt time.Time `json:"created_at"`
 	// When the row was last updated

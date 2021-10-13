@@ -47,18 +47,20 @@ CREATE TABLE "orders"
 (
     "order_id"         bigserial PRIMARY KEY,
     "order_user_id"    bigint       NOT NULL,
-    "order_amount"     FLOAT        NOT NULL,
-    "order_city"       VARCHAR(50)  NOT NULL,
-    "order_state"      VARCHAR(50)  NOT NULL,
-    "order_postal"     VARCHAR(20)  NOT NULL,
-    "order_country"    VARCHAR(50)  NOT NULL,
-    "order_addr_1"     VARCHAR(100) NOT NULL,
-    "order_addr_2"     VARCHAR(100),
-    "order_phone"      VARCHAR(20)  NOT NULL,
-    "order_shipping"   FLOAT        NOT NULL,
+    "order_amount"     FLOAT        NOT NULL DEFAULT 0.00,
+    "order_paid"       BOOLEAN      NOT NULL DEFAULT false, -- Newly added
+    "order_city"       VARCHAR(50)  NULL,
+    "order_state"      VARCHAR(50)  NULL,
+    "order_postal"     VARCHAR(20)  NULL,
+    "order_country"    VARCHAR(50)  NULL,
+    "order_addr_1"     VARCHAR(100) NULL,
+    "order_addr_2"     VARCHAR(100) NULL,
+    "order_phone"      VARCHAR(20)  NULL,
+    "order_shipping"   FLOAT        NULL,
     "order_date"       timestamptz  NOT NULL DEFAULT (now()),
     "order_shipped"    boolean      NOT NULL DEFAULT false,
-    "order_track_code" VARCHAR(80),
+    "order_track_code" VARCHAR(80)  NULL,
+    "order_expire"     timestamptz  NOT NULL DEFAULT (now() + INTERVAL '1 week'),
     "created_at"       timestamptz  NOT NULL DEFAULT (now()),
     "updated_at"       timestamptz  NOT NULL DEFAULT (now())
 );
@@ -137,6 +139,14 @@ BEGIN
 END;
 $$ language plpgsql;
 
+CREATE OR REPLACE FUNCTION trigger_set_new_order_expire_timestamp()
+    RETURNS TRIGGER AS $$
+BEGIN
+    NEW.order_expire = NOW() + INTERVAL '1 week';
+    RETURN NEW;
+END;
+$$ language plpgsql;
+
 
 CREATE TRIGGER set_timestamp_products
     BEFORE UPDATE ON products
@@ -167,4 +177,9 @@ CREATE TRIGGER set_timestamp_order_date
     BEFORE INSERT ON orders
     FOR EACH ROW
 EXECUTE PROCEDURE trigger_set_order_date_timestamp();
+
+CREATE TRIGGER set_new_order_expire_timestamp
+    BEFORE UPDATE ON orders
+    FOR EACH ROW
+    EXECUTE PROCEDURE trigger_set_new_order_expire_timestamp();
 

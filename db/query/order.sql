@@ -31,20 +31,23 @@ LIMIT $1
 UPDATE orders
 SET                     order_user_id = $2,
                         order_amount = $3,
-                        order_city = $4,
-                        order_state = $5,
-                        order_postal = $6,
-                        order_country = $7,
-                        order_addr_1 = $8,
-                        order_addr_2 = $9,
-                        order_phone = $10,
-                        order_shipping = $11,
-                        order_date = $12,
-                        order_shipped = $13,
-                        order_track_code = $14
+                        order_paid = $4,
+                        order_city = $5,
+                        order_state = $6,
+                        order_postal = $7,
+                        order_country = $8,
+                        order_addr_1 = $9,
+                        order_addr_2 = $10,
+                        order_phone = $11,
+                        order_shipping = $12,
+                        order_date = $13,
+                        order_shipped = $14,
+                        order_track_code = $15
 WHERE order_id = $1
 RETURNING *;
 
 -- name: DeleteOrder :exec
 DELETE FROM orders
 WHERE order_id = $1;
+
+

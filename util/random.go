@@ -2,6 +2,7 @@
 package util
 
 import (
+	"database/sql"
 	"fmt"
 	"math"
 	"math/rand"
@@ -49,6 +50,23 @@ func RandomString(n int) string {
 	return stringBuilder.String() // return the string
 }
 
+/*RandomNullString Generates a random string of a specified length
+@param n int length of the generated string
+@return string Returns the generated string
+*/
+func RandomNullString(n int) sql.NullString {
+	var stringBuilder strings.Builder
+
+	length := len(alphabet)
+
+	for i := 0; i < n; i++ {
+		c := alphabet[rand.Intn(length)] // Grab a random character
+		stringBuilder.WriteByte(c)
+	}
+
+	return sql.NullString{String: stringBuilder.String(), Valid: true} // return the string
+}
+
 /*RandomName generates a random name
 @params NONE
 @return string Returns the random name generated
@@ -59,10 +77,18 @@ func RandomName() string {
 
 /*RandomAddress Generates a random address
 @params NONE
-@return Returns the randomly generated address
+@return string Returns the randomly generated address
 */
 func RandomAddress() string {
 	return fmt.Sprintf("%d %s %s", RandomInt(10, 999), RandomString(15), RandomString(15))
+}
+
+/*RandomNullAddress Generates a random address
+@params NONE
+@return sql.NullString Returns the randomly generated address
+*/
+func RandomNullAddress() sql.NullString {
+	return sql.NullString{String: fmt.Sprintf("%d %s %s", RandomInt(10, 999), RandomString(15), RandomString(15)), Valid: true}
 }
 
 /*RandomEmail Generates a random email address
@@ -81,6 +107,14 @@ func RandomPostal() string {
 	return fmt.Sprintf("%d", RandomInt(10000, 99999))
 }
 
+/*RandomNullPostal Generates a random postal code
+@params NONE
+@return sql.NullString The random postal code generated
+*/
+func RandomNullPostal() sql.NullString {
+	return sql.NullString{String: fmt.Sprintf("%d", RandomInt(10000, 99999)), Valid: true}
+}
+
 /*RandomSKU generates a random SKU
 @param none
 @return string Generated SKU
@@ -97,6 +131,14 @@ func RandomFloat2() float64 {
 	return math.Round(rand.Float64()*100) / 100
 }
 
+/*RandomNullFloat2 Generates a random float rounded to 2 decimal places
+@params NONE
+@return sql.NullFloat64 The generated float
+*/
+func RandomNullFloat2() sql.NullFloat64 {
+	return sql.NullFloat64{Float64: math.Round(rand.Float64()*100) / 100, Valid: true}
+}
+
 /*RandomImage Generates a random image file name
 @param NONE
 @return string Generated image file name
@@ -105,23 +147,18 @@ func RandomImage() string {
 	return fmt.Sprintf("%s.%s", RandomString(4), imageFileTypes[rand.Intn(len(imageFileTypes))])
 }
 
-/*RandomBool Generates a random Bool
-@params NONE
-@return bool The generated bool
-*/
-func RandomBool() bool {
-	n := RandomInt(1, 20)
-	if n%2 == 0 {
-		return true
-	}
-
-	return false
-}
-
 /*RandomPhone generates a random phone number
 @params NONE
 @return Generated phone number
 */
 func RandomPhone() string {
 	return fmt.Sprintf("+%d(%d) %d-%d", RandomInt(1, 99), RandomInt(100, 999), RandomInt(100, 999), RandomInt(1000, 9999))
+}
+
+/*RandomNullPhone generates a random phone number
+@params NONE
+@return Generated phone number
+*/
+func RandomNullPhone() sql.NullString {
+	return sql.NullString{String: fmt.Sprintf("+%d(%d) %d-%d", RandomInt(1, 99), RandomInt(100, 999), RandomInt(100, 999), RandomInt(1000, 9999)), Valid: true}
 }
