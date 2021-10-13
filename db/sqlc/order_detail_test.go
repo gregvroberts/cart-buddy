@@ -20,7 +20,7 @@ func createRandomOrderDetail(t *testing.T) OrderDetail {
 		DetailOrderID:     ord1.OrderID,
 		DetailProductID:   prod1.ProductID,
 		DetailProductName: prod1.ProductName,
-		DetailUnitPrice:   prod1.ProductPrice,
+		DetailUnitPrice:   util.RandomFloat2(),
 		DetailSku:         prod1.ProductSku,
 		DetailQuantity:    util.RandomInt(1, 100),
 	}
@@ -78,7 +78,33 @@ func TestQueries_GetOrderDetail(t *testing.T) {
 @return NONE
 */
 func TestQueries_UpdateOrderDetail(t *testing.T) {
+	orderDetail1 := createRandomOrderDetail(t)
+	prod1 := createRandomProduct(t)
+	ord1 := createRandomOrder(t)
 
+	arg := UpdateOrderDetailParams{
+		DetailID:          orderDetail1.DetailID,
+		DetailOrderID:     ord1.OrderID,
+		DetailProductID:   prod1.ProductID,
+		DetailQuantity:    util.RandomInt(15, 20),
+		DetailUnitPrice:   prod1.ProductPrice,
+		DetailProductName: prod1.ProductName,
+		DetailSku:         prod1.ProductSku,
+	}
+
+	orderDetail2, err := testQueries.UpdateOrderDetail(context.Background(), arg)
+	require.NoError(t, err)
+	require.NotEmpty(t, orderDetail2)
+
+	require.Equal(t, orderDetail1.DetailID, orderDetail2.DetailID)
+	require.NotEqual(t, orderDetail1.DetailOrderID, orderDetail2.DetailOrderID)
+	require.NotEqual(t, orderDetail1.DetailProductID, orderDetail2.DetailProductID)
+	require.NotEqual(t, orderDetail1.DetailProductName, orderDetail2.DetailProductName)
+	require.NotEqual(t, orderDetail1.DetailUnitPrice, orderDetail2.DetailUnitPrice)
+	require.NotEqual(t, orderDetail1.DetailSku, orderDetail2.DetailSku)
+	require.NotEqual(t, orderDetail1.DetailQuantity, orderDetail2.DetailQuantity)
+	require.Equal(t, orderDetail1.CreatedAt, orderDetail2.CreatedAt)
+	require.NotEqual(t, orderDetail1.UpdatedAt, orderDetail2.UpdatedAt)
 }
 
 /*TestQueries_DeleteOrderDetail Tests the DeleteOrderDetail function
