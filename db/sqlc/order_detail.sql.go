@@ -13,11 +13,10 @@ INSERT INTO order_details (
     detail_product_id,
     detail_product_name,
     detail_unit_price,
-    detail_unit_price,
     detail_sku,
     detail_quantity
 ) VALUES (
-             $1, $2, $3, $4, $5, $6, $7
+             $1, $2, $3, $4, $5, $6
          ) RETURNING detail_id, detail_order_id, detail_product_id, detail_product_name, detail_unit_price, detail_sku, detail_quantity, created_at, updated_at
 `
 
@@ -26,7 +25,6 @@ type CreateOrderDetailParams struct {
 	DetailProductID   int64   `json:"detail_product_id"`
 	DetailProductName string  `json:"detail_product_name"`
 	DetailUnitPrice   float64 `json:"detail_unit_price"`
-	DetailUnitPrice_2 float64 `json:"detail_unit_price_2"`
 	DetailSku         string  `json:"detail_sku"`
 	DetailQuantity    int64   `json:"detail_quantity"`
 }
@@ -37,7 +35,6 @@ func (q *Queries) CreateOrderDetail(ctx context.Context, arg CreateOrderDetailPa
 		arg.DetailProductID,
 		arg.DetailProductName,
 		arg.DetailUnitPrice,
-		arg.DetailUnitPrice_2,
 		arg.DetailSku,
 		arg.DetailQuantity,
 	)
@@ -139,9 +136,8 @@ SET detail_order_id = $2,
     detail_product_id = $3,
     detail_product_name = $4,
     detail_unit_price = $5,
-    detail_unit_price = $6,
-    detail_sku = $7,
-    detail_quantity = $8
+    detail_sku = $6,
+    detail_quantity = $7
 WHERE detail_id = $1
 RETURNING detail_id, detail_order_id, detail_product_id, detail_product_name, detail_unit_price, detail_sku, detail_quantity, created_at, updated_at
 `
@@ -152,7 +148,6 @@ type UpdateOrderDetailParams struct {
 	DetailProductID   int64   `json:"detail_product_id"`
 	DetailProductName string  `json:"detail_product_name"`
 	DetailUnitPrice   float64 `json:"detail_unit_price"`
-	DetailUnitPrice_2 float64 `json:"detail_unit_price_2"`
 	DetailSku         string  `json:"detail_sku"`
 	DetailQuantity    int64   `json:"detail_quantity"`
 }
@@ -164,7 +159,6 @@ func (q *Queries) UpdateOrderDetail(ctx context.Context, arg UpdateOrderDetailPa
 		arg.DetailProductID,
 		arg.DetailProductName,
 		arg.DetailUnitPrice,
-		arg.DetailUnitPrice_2,
 		arg.DetailSku,
 		arg.DetailQuantity,
 	)
