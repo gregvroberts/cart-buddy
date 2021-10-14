@@ -12,21 +12,21 @@ func TestAddToCartTx(t *testing.T) {
 	store := NewStore(testDB)
 
 	// run n concurrent AddToCart transactions
-	n := 5
+	n := 2
 
 	errs := make(chan error)
 	results := make(chan AddToCartTxResult)
 
+	prod1 := createRandomProduct(t)
+	ord1 := createRandomOrder(t)
+
 	for i := 0; i < n; i++ {
 		go func() {
-
-			prod1 := createRandomProduct(t)
-			ord1 := createRandomOrder(t)
 
 			result, err := store.AddToOrderTx(context.Background(), AddToCartTxParams{
 				ProductID: prod1.ProductID,
 				OrderID:   ord1.OrderID,
-				Quantity:  util.RandomInt(1, 15),
+				Quantity:  util.RandomInt(1, 5),
 			})
 			errs <- err
 			results <- result
@@ -58,7 +58,6 @@ func TestAddToCartTx(t *testing.T) {
 		require.Equal(t, product.ProductPrice, orderDetail.DetailUnitPrice)
 		require.Equal(t, result.Quantity, orderDetail.DetailQuantity)
 		require.WithinDuration(t, orderDetail.CreatedAt, orderDetail.UpdatedAt, time.Second)
-
-		//TODO: Check product stock
 	}
+
 }
