@@ -12,7 +12,7 @@ CREATE TABLE "products"
     "product_image"       VARCHAR(100)  NOT NULL,
     "product_category_id" bigint        NOT NULL,
     "product_update_date" timestamptz   NOT NULL DEFAULT (now()),
-    "product_stock"       FLOAT,
+    "product_stock"       BIGINT        NOT NULL DEFAULT 0,
     "product_live"        boolean       NOT NULL DEFAULT false,
     "product_unlimited"   boolean       NOT NULL DEFAULT false,
     "product_location"    VARCHAR(250)  NOT NULL,

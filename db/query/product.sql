@@ -51,3 +51,15 @@ RETURNING *;
 -- name: DeleteProduct :exec
 DELETE FROM products
 WHERE product_id = $1;
+
+-- name: GetProductForUpdate :one
+SELECT * FROM products
+    WHERE product_id = $1 LIMIT 1
+FOR UPDATE;
+
+-- name: UpdateProductInventory :one
+UPDATE products
+SET
+    product_stock = $2
+WHERE product_id = $1
+RETURNING *;

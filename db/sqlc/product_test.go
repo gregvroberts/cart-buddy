@@ -29,7 +29,7 @@ func createRandomProduct(t *testing.T) Product {
 		ProductCategoryID: pcat.CategoryID,
 		ProductLive:       false,
 		ProductLocation:   util.RandomString(10),
-		ProductStock:      sql.NullFloat64{Float64: util.RandomFloat2(), Valid: true},
+		ProductStock:      util.RandomInt(3, 20),
 		ProductUnlimited:  false,
 	}
 
@@ -123,7 +123,7 @@ func TestQueries_UpdateProduct(t *testing.T) {
 		ProductCategoryID: pcat1.CategoryID,
 		ProductLive:       true,
 		ProductLocation:   util.RandomString(10),
-		ProductStock:      sql.NullFloat64{Valid: false},
+		ProductStock:      0,
 		ProductUnlimited:  true,
 	}
 
@@ -187,4 +187,41 @@ func TestQueries_ListProducts(t *testing.T) {
 	for _, product := range products {
 		require.NotEmpty(t, product)
 	}
+}
+
+/*TestQueries_UpdateProductInventory Tests the UpdateProductInvenctory function
+@pararm t *testing.T The test object type
+@return none
+*/
+func TestQueries_UpdateProductInventory(t *testing.T) {
+	prod1 := createRandomProduct(t)
+
+	arg := UpdateProductInventoryParams{
+		ProductID:    prod1.ProductID,
+		ProductStock: prod1.ProductStock - 1,
+	}
+
+	prod2, err := testQueries.UpdateProductInventory(context.Background(), arg)
+	require.NoError(t, err)
+	require.NotEmpty(t, prod2)
+
+	require.NotEqual(t, prod1.ProductStock, prod2.ProductStock)
+
+	require.Equal(t, prod1.ProductSku, prod2.ProductSku)
+	require.Equal(t, prod1.ProductName, prod2.ProductName)
+	require.Equal(t, prod1.ProductPrice, prod2.ProductPrice)
+	require.Equal(t, prod1.ProductWeight, prod2.ProductWeight)
+	require.Equal(t, prod1.ProductCartDesc, prod2.ProductCartDesc)
+	require.Equal(t, prod1.ProductShortDesc, prod2.ProductShortDesc)
+	require.Equal(t, prod1.ProductLongDesc, prod2.ProductLongDesc)
+	require.Equal(t, prod1.ProductThumb, prod2.ProductThumb)
+	require.Equal(t, prod1.ProductImage, prod2.ProductImage)
+	require.Equal(t, prod1.ProductCategoryID, prod2.ProductCategoryID)
+	require.NotEqual(t, prod1.ProductUpdateDate, prod2.ProductUpdateDate)
+	require.Equal(t, prod1.ProductLive, prod2.ProductLive)
+	require.Equal(t, prod1.ProductUnlimited, prod2.ProductUnlimited)
+	require.Equal(t, prod1.ProductLocation, prod2.ProductLocation)
+	require.Equal(t, prod1.CreatedAt, prod1.CreatedAt)
+	require.NotEqual(t, prod1.UpdatedAt, prod2.UpdatedAt)
+	require.NotEqual(t, prod1.ProductStock, prod2.ProductStock)
 }

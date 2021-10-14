@@ -5,7 +5,6 @@ package db
 
 import (
 	"context"
-	"database/sql"
 )
 
 const createProduct = `-- name: CreateProduct :one
@@ -30,20 +29,20 @@ INSERT INTO products (
 `
 
 type CreateProductParams struct {
-	ProductSku        string          `json:"product_sku"`
-	ProductName       string          `json:"product_name"`
-	ProductPrice      float64         `json:"product_price"`
-	ProductWeight     float64         `json:"product_weight"`
-	ProductCartDesc   string          `json:"product_cart_desc"`
-	ProductShortDesc  string          `json:"product_short_desc"`
-	ProductLongDesc   string          `json:"product_long_desc"`
-	ProductThumb      string          `json:"product_thumb"`
-	ProductImage      string          `json:"product_image"`
-	ProductCategoryID int64           `json:"product_category_id"`
-	ProductStock      sql.NullFloat64 `json:"product_stock"`
-	ProductLive       bool            `json:"product_live"`
-	ProductUnlimited  bool            `json:"product_unlimited"`
-	ProductLocation   string          `json:"product_location"`
+	ProductSku        string  `json:"product_sku"`
+	ProductName       string  `json:"product_name"`
+	ProductPrice      float64 `json:"product_price"`
+	ProductWeight     float64 `json:"product_weight"`
+	ProductCartDesc   string  `json:"product_cart_desc"`
+	ProductShortDesc  string  `json:"product_short_desc"`
+	ProductLongDesc   string  `json:"product_long_desc"`
+	ProductThumb      string  `json:"product_thumb"`
+	ProductImage      string  `json:"product_image"`
+	ProductCategoryID int64   `json:"product_category_id"`
+	ProductStock      int64   `json:"product_stock"`
+	ProductLive       bool    `json:"product_live"`
+	ProductUnlimited  bool    `json:"product_unlimited"`
+	ProductLocation   string  `json:"product_location"`
 }
 
 func (q *Queries) CreateProduct(ctx context.Context, arg CreateProductParams) (Product, error) {
@@ -104,6 +103,38 @@ WHERE product_id = $1 LIMIT 1
 
 func (q *Queries) GetProduct(ctx context.Context, productID int64) (Product, error) {
 	row := q.db.QueryRowContext(ctx, getProduct, productID)
+	var i Product
+	err := row.Scan(
+		&i.ProductID,
+		&i.ProductSku,
+		&i.ProductName,
+		&i.ProductPrice,
+		&i.ProductWeight,
+		&i.ProductCartDesc,
+		&i.ProductShortDesc,
+		&i.ProductLongDesc,
+		&i.ProductThumb,
+		&i.ProductImage,
+		&i.ProductCategoryID,
+		&i.ProductUpdateDate,
+		&i.ProductStock,
+		&i.ProductLive,
+		&i.ProductUnlimited,
+		&i.ProductLocation,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const getProductForUpdate = `-- name: GetProductForUpdate :one
+SELECT product_id, product_sku, product_name, product_price, product_weight, product_cart_desc, product_short_desc, product_long_desc, product_thumb, product_image, product_category_id, product_update_date, product_stock, product_live, product_unlimited, product_location, created_at, updated_at FROM products
+    WHERE product_id = $1 LIMIT 1
+FOR UPDATE
+`
+
+func (q *Queries) GetProductForUpdate(ctx context.Context, productID int64) (Product, error) {
+	row := q.db.QueryRowContext(ctx, getProductForUpdate, productID)
 	var i Product
 	err := row.Scan(
 		&i.ProductID,
@@ -204,21 +235,21 @@ RETURNING product_id, product_sku, product_name, product_price, product_weight, 
 `
 
 type UpdateProductParams struct {
-	ProductID         int64           `json:"product_id"`
-	ProductSku        string          `json:"product_sku"`
-	ProductName       string          `json:"product_name"`
-	ProductPrice      float64         `json:"product_price"`
-	ProductWeight     float64         `json:"product_weight"`
-	ProductCartDesc   string          `json:"product_cart_desc"`
-	ProductShortDesc  string          `json:"product_short_desc"`
-	ProductLongDesc   string          `json:"product_long_desc"`
-	ProductThumb      string          `json:"product_thumb"`
-	ProductImage      string          `json:"product_image"`
-	ProductCategoryID int64           `json:"product_category_id"`
-	ProductStock      sql.NullFloat64 `json:"product_stock"`
-	ProductLive       bool            `json:"product_live"`
-	ProductUnlimited  bool            `json:"product_unlimited"`
-	ProductLocation   string          `json:"product_location"`
+	ProductID         int64   `json:"product_id"`
+	ProductSku        string  `json:"product_sku"`
+	ProductName       string  `json:"product_name"`
+	ProductPrice      float64 `json:"product_price"`
+	ProductWeight     float64 `json:"product_weight"`
+	ProductCartDesc   string  `json:"product_cart_desc"`
+	ProductShortDesc  string  `json:"product_short_desc"`
+	ProductLongDesc   string  `json:"product_long_desc"`
+	ProductThumb      string  `json:"product_thumb"`
+	ProductImage      string  `json:"product_image"`
+	ProductCategoryID int64   `json:"product_category_id"`
+	ProductStock      int64   `json:"product_stock"`
+	ProductLive       bool    `json:"product_live"`
+	ProductUnlimited  bool    `json:"product_unlimited"`
+	ProductLocation   string  `json:"product_location"`
 }
 
 func (q *Queries) UpdateProduct(ctx context.Context, arg UpdateProductParams) (Product, error) {
@@ -239,6 +270,45 @@ func (q *Queries) UpdateProduct(ctx context.Context, arg UpdateProductParams) (P
 		arg.ProductUnlimited,
 		arg.ProductLocation,
 	)
+	var i Product
+	err := row.Scan(
+		&i.ProductID,
+		&i.ProductSku,
+		&i.ProductName,
+		&i.ProductPrice,
+		&i.ProductWeight,
+		&i.ProductCartDesc,
+		&i.ProductShortDesc,
+		&i.ProductLongDesc,
+		&i.ProductThumb,
+		&i.ProductImage,
+		&i.ProductCategoryID,
+		&i.ProductUpdateDate,
+		&i.ProductStock,
+		&i.ProductLive,
+		&i.ProductUnlimited,
+		&i.ProductLocation,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const updateProductInventory = `-- name: UpdateProductInventory :one
+UPDATE products
+SET
+    product_stock = $2
+WHERE product_id = $1
+RETURNING product_id, product_sku, product_name, product_price, product_weight, product_cart_desc, product_short_desc, product_long_desc, product_thumb, product_image, product_category_id, product_update_date, product_stock, product_live, product_unlimited, product_location, created_at, updated_at
+`
+
+type UpdateProductInventoryParams struct {
+	ProductID    int64 `json:"product_id"`
+	ProductStock int64 `json:"product_stock"`
+}
+
+func (q *Queries) UpdateProductInventory(ctx context.Context, arg UpdateProductInventoryParams) (Product, error) {
+	row := q.db.QueryRowContext(ctx, updateProductInventory, arg.ProductID, arg.ProductStock)
 	var i Product
 	err := row.Scan(
 		&i.ProductID,
